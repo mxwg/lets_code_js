@@ -1,3 +1,10 @@
 language: node_js
 
+node_js:
+  - "6"
+
+before_install:
+  - "npm install jake"
+  - "npm install jshint"
+
 script: ./jake.sh
