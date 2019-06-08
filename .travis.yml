@@ -1,20 +1,19 @@
 language: node_js
+
 node_js:
-- '6'
-before_install:
-- npm install
+  - '6'
 
-stages:
-  - name: test
-    script: "./jake.sh"
-
-  - name: deploy
-    if: branch = master
-    deploy:
-      provider: heroku
-      app: weepaint
-      api_key:
-        secure: Xk4F0OQHRh4OrW+OSAAvNFAvxfEBRlGW/dm2AwHhoCkusBX8CRX1qaIT21dONh7CZm5e84q4PiFOZOdxeqbW8yywG1NwZZt0/Nqf4/Zm+7dB4LxpwgZUT2Kj7sC++aGQ2epnwSN8mX1LjSM1e2PM1zugedwqruXAfGEylu1y7q36WB+DkScksgQX3cN91MjXLFDFqZnz3qPuNyc+glxKvgishW6jLYT49YQ/UcjvOUaU9dH/xbjLtBv3sKd6tAeIn8dG93psaiRhmdkxN9Y0hgcd7gWO4w1bWyoxItbaNRTJWDNLQh83+u/agt7+2bYgknjRi1BnObaScviqkmcuz/FEc3hZNhd8ppmrRk6rgSuLHOa/yknaco1PnhfYZBLR8qg/EvX5N7RL0s6AIqz0vWecqbnh0Ux7jC3kBV8Vki2QkunILghKFb+ILuP9I7qLDl3g/B3xIRj9d/vYCuH6iacrz7QbHifC6EGhhY8wP36tnsgSNsUF0n5gx1BM9syWjXZvGyfgI0NpzE+pLqZHma0Nq/doetNQHiFekP0BVuKp9QXWK36FytBUxVzY/49OQq1GueplRrIUsb6HfO40xqV0lxkrCr6jBZ48R527/uxXb0hJ/NI9IpCs5O++54WcG1x7L56+bR8jM8ZmXxax/gRSvLT+ZKfN0vz2ogfzczQ=
-  - name: test deployment
-    if: branch = master
-    script: "./jake.sh releasetest"
+jobs:
+  include:
+    - stage: test
+      script: "./jake.sh"
+    - stage: deploy
+      if: branch = master
+      deploy:
+        provider: heroku
+        app: weepaint
+        api_key:
+          secure: Xk4F0OQHRh4OrW+OSAAvNFAvxfEBRlGW/dm2AwHhoCkusBX8CRX1qaIT21dONh7CZm5e84q4PiFOZOdxeqbW8yywG1NwZZt0/Nqf4/Zm+7dB4LxpwgZUT2Kj7sC++aGQ2epnwSN8mX1LjSM1e2PM1zugedwqruXAfGEylu1y7q36WB+DkScksgQX3cN91MjXLFDFqZnz3qPuNyc+glxKvgishW6jLYT49YQ/UcjvOUaU9dH/xbjLtBv3sKd6tAeIn8dG93psaiRhmdkxN9Y0hgcd7gWO4w1bWyoxItbaNRTJWDNLQh83+u/agt7+2bYgknjRi1BnObaScviqkmcuz/FEc3hZNhd8ppmrRk6rgSuLHOa/yknaco1PnhfYZBLR8qg/EvX5N7RL0s6AIqz0vWecqbnh0Ux7jC3kBV8Vki2QkunILghKFb+ILuP9I7qLDl3g/B3xIRj9d/vYCuH6iacrz7QbHifC6EGhhY8wP36tnsgSNsUF0n5gx1BM9syWjXZvGyfgI0NpzE+pLqZHma0Nq/doetNQHiFekP0BVuKp9QXWK36FytBUxVzY/49OQq1GueplRrIUsb6HfO40xqV0lxkrCr6jBZ48R527/uxXb0hJ/NI9IpCs5O++54WcG1x7L56+bR8jM8ZmXxax/gRSvLT+ZKfN0vz2ogfzczQ=
+    - stage: test deployment
+      if: branch = master
+      script: "./jake.sh releasetest"
