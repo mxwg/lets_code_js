@@ -1,7 +1,7 @@
 "use strict";
 
-var http = require("http");
-var server;
+const http = require("http");
+let server;
 
 exports.start = function () {
     server = http.createServer();

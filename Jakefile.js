@@ -7,20 +7,20 @@
 
     desc("Lint everything (but modules)");
     task("lint", [], function () {
-        var lint = require("./build/lint/lint_runner.js");
+        const lint = require("./build/lint/lint_runner.js");
 
-        var files = new jake.FileList();
+        const files = new jake.FileList();
         files.include("**/*.js");
         files.exclude("node_modules");
 
-        var options = nodeLintOptions();
-        var passed = lint.validateFileList(files.toArray(), options, {});
+        const options = nodeLintOptions();
+        const passed = lint.validateFileList(files.toArray(), options, {});
         if (!passed) fail("Lint failed!");
     });
 
     desc("Test everything");
     task("test", [], function() {
-        var reporter = require("nodeunit").reporters.default;
+        const reporter = require("nodeunit").reporters.default;
         reporter.run(['src/server/_server_test.js'], null, function(failures) {
             if (failures) fail("Tests failed.");
             complete();
@@ -29,6 +29,7 @@
 
     function nodeLintOptions() {
         return {
+            esversion: 6,
             bitwise: true,
             curly: false,
             eqeqeq: true,

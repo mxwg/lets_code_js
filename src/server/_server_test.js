@@ -1,7 +1,7 @@
 "use strict";
 
-var http = require("http");
-var server = require("./server.js");
+const http = require("http");
+const server = require("./server.js");
 
 exports.tearDown = function (done) {
     server.stop(function () {
