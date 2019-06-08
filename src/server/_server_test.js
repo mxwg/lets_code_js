@@ -1,5 +1,7 @@
 "use strict";
 
+const PORT = 8088;
+
 const http = require("http");
 const server = require("./server.js");
 
@@ -13,8 +15,8 @@ exports.tearDown = function (done) {
 // TODO: test stop() taking a callback
 
 exports.testServerReturnsHelloWorld = function (test) {
-    server.start();
-    const request = http.get("http://localhost:8088");
+    server.start(PORT);
+    const request = http.get("http://localhost:" + PORT);
     request.on("response", function (response) {
         let receivedData = false;
         response.setEncoding("utf8");
