@@ -29,6 +29,15 @@ exports.test_canGetHomepage = function (test) {
     });
 };
 
+exports.test_canGet404Page = function (test) {
+    getFromServer("/nonexistent", function (response, receivedData) {
+        test.equals(404, response.statusCode, "status code");
+        const found404Marker = receivedData.indexOf("WeeWikiPaint 404") !== -1;
+        test.ok(found404Marker, "404 page should have contained marker");
+        test.done();
+    });
+};
+
 function runServer(callback) {
     child = child_process.spawn("node",["src/server/weewikipaint", "8088"]);
     child.stdout.setEncoding("utf8");
@@ -40,9 +49,7 @@ function runServer(callback) {
     });
 }
 
-// TODO duplicated w/ _server_test.js
 function getFromServer(url, callback) {
-    // server.start(TEST_HOME_PAGE, TEST_404_PAGE, PORT);
     const request = http.get("http://localhost:8088" + url);
     request.on("response", function (response) {
         let receivedData = "";

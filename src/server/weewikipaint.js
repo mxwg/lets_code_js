@@ -1,7 +1,9 @@
 "use strict";
 
 const server = require("./server.js");
+const contentDir = "src/server/content";
+const port = process.argv[2];
 
-server.start("src/server/content/homepage.html", "404.html", 8088, function () {
+server.start(contentDir + "/homepage.html", contentDir +"/404.html", port, function () {
     console.log("Server started");
 });
