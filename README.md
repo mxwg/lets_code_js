@@ -14,13 +14,31 @@ Install dependencies listed in `package.json`:
 
         npm install
 
+3. (Optional) travis cli
+
+        sudo apt install ruby-dev && sudo gem install travis
+
 ## Deployment
 
 1. Install heroku app
 
         sudo snap install --classic heroku
 
-2. Login & deploy
+2. Login, deploy and check status
 
         heroku login
         git push heroku master
+        heroku ps
+
+## Starting/stopping the webapp
+
+The webapp is started automatically after a heroku push.
+It will sleep after 30 minutes of inactivity but stay available.
+
+It can be stopped via:
+
+        heroku ps:scale web=0
+
+And restarted via:
+
+        heroku ps:scale web=0

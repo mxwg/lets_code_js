@@ -34,9 +34,23 @@
 
         const testFiles = new jake.FileList();
         testFiles.include("src/**/_*_test.js");
+        testFiles.exclude("_release_test.js");
 
         reporter.run(testFiles.toArray(), null, function(failures) {
             if (failures) fail("Tests failed.");
+            complete();
+        });
+    }, {async: true});
+
+    desc("Test deployment on the web");
+    task("releasetest", ["test"], function() {
+        const reporter = require("nodeunit").reporters.default;
+
+        const testFiles = new jake.FileList();
+        testFiles.include("src/releasetest/_*_test.js");
+
+        reporter.run(testFiles.toArray(), null, function(failures) {
+            if (failures) fail("Website offline.");
             complete();
         });
     }, {async: true});

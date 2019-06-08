@@ -45,7 +45,7 @@ exports.test_canGet404Page = function (test) {
 function runServer(callback) {
     const web = procfile.parse(fs.readFileSync("Procfile", "utf8")).web;
     web.options = web.options.map(function (element) {
-        if (element == "$PORT") return HEROKU_DEFAULT_PORT;
+        if (element === "$PORT") return HEROKU_DEFAULT_PORT;
         else return element;
     });
     child = child_process.spawn(web.command,web.options);
@@ -68,7 +68,6 @@ function getFromServer(url, callback) {
         });
 
         response.on("end", function () {
-            // server.stop();
             callback(response, receivedData);
         });
     });
