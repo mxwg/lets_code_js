@@ -6,5 +6,6 @@ node_js:
 before_install:
   - "npm install jake"
   - "npm install jshint"
+  - "npm install nodeunit"
 
 script: ./jake.sh
