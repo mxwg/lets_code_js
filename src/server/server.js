@@ -1,17 +1,1 @@
-"use strict";
-
-const http = require("http");
-let server;
-
-exports.start = function (port) {
-    if(!port) throw "Port required!";
-    server = http.createServer();
-    server.on("request", function (request, response) {
-        response.end("Hello World");
-    });
-    server.listen(port);
-};
-
-exports.stop = function (callback) {
-    server.close(callback);
-};
+"use strict";const http = require("http");const fs = require("fs");let server;exports.start = function (page, port) {    if(!port) throw "Port required!";    server = http.createServer();    server.on("request", function (request, response) {        fs.readFile(page, function(err, data) {           if (err) throw err;            response.end(data);        });    });    server.listen(port);};exports.stop = function (callback) {    server.close(callback);};
