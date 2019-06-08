@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2019. See LICENSE.txt for details.
+ */
+
 "use strict";
 
 const PORT = 8088;
@@ -7,7 +11,7 @@ const EXPECTED_DATA = "data from file";
 
 const fs = require("fs");
 const http = require("http");
-const server = require("./server.js");
+const server = require("../server/server.js");
 const assert = require("assert");
 
 exports.tearDown = function (done) {
@@ -38,7 +42,7 @@ exports.test_requiresPortNumber = function (test) {
 };
 
 exports.test_runsCallbackWhenStopCompletes = function (test) {
-    server.start(TEST_HOME_PAGE,TEST_404_PAGE, PORT);
+    server.start(TEST_HOME_PAGE, TEST_404_PAGE, PORT);
     server.stop(function () {
         test.done();
     });
@@ -81,18 +85,19 @@ exports.test_returnsHomepageWhenAskedForIndex = function (test) {
 };
 
 function getFromServer(url, callback) {
-    server.start(TEST_HOME_PAGE, TEST_404_PAGE, PORT);
-    const request = http.get("http://localhost:" + PORT + url);
-    request.on("response", function (response) {
-        let receivedData = "";
-        response.setEncoding("utf8");
-        response.on("data", function (chunk) {
-            receivedData += chunk;
-        });
+    server.start(TEST_HOME_PAGE, TEST_404_PAGE, PORT, function () {
+        const request = http.get("http://localhost:" + PORT + url);
+        request.on("response", function (response) {
+            let receivedData = "";
+            response.setEncoding("utf8");
+            response.on("data", function (chunk) {
+                receivedData += chunk;
+            });
 
-        response.on("end", function () {
-            server.stop();
-            callback(response, receivedData);
+            response.on("end", function () {
+                server.stop();
+                callback(response, receivedData);
+            });
         });
     });
 }
