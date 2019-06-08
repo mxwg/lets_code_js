@@ -5,8 +5,12 @@
 // "smoke test" b/c it's to test that when the systems is run, no smoke comes out :-)
 "use strict";
 
+const HEROKU_DEFAULT_PORT = "5000";
+
 const child_process = require("child_process");
 const http = require("http");
+const fs = require("fs");
+const procfile = require("procfile");
 
 let child;
 
@@ -39,7 +43,12 @@ exports.test_canGet404Page = function (test) {
 };
 
 function runServer(callback) {
-    child = child_process.spawn("node",["src/server/weewikipaint", "8088"]);
+    const web = procfile.parse(fs.readFileSync("Procfile", "utf8")).web;
+    web.options = web.options.map(function (element) {
+        if (element === "$PORT") return HEROKU_DEFAULT_PORT;
+        else return element;
+    });
+    child = child_process.spawn(web.command,web.options);
     child.stdout.setEncoding("utf8");
     child.stdout.on("data", function (chunk) {
         if (chunk.trim() === "Server started")
@@ -50,7 +59,7 @@ function runServer(callback) {
 }
 
 function getFromServer(url, callback) {
-    const request = http.get("http://localhost:8088" + url);
+    const request = http.get("http://localhost:" + HEROKU_DEFAULT_PORT + url);
     request.on("response", function (response) {
         let receivedData = "";
         response.setEncoding("utf8");
@@ -59,7 +68,6 @@ function getFromServer(url, callback) {
         });
 
         response.on("end", function () {
-            // server.stop();
             callback(response, receivedData);
         });
     });

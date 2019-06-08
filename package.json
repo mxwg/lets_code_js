@@ -6,9 +6,11 @@
   "dependencies": {
     "jake": "^8.1.1",
     "jshint": "^2.10.2",
+    "procfile": "^0.1.1"
+  },
+  "devDependencies": {
     "nodeunit": "^0.11.3"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "./jake.sh"
   },
