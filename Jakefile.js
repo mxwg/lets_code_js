@@ -25,7 +25,7 @@
             if (failures) fail("Tests failed.");
             complete();
         });
-    });
+    }, {async: true});
 
     function nodeLintOptions() {
         return {
