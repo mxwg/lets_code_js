@@ -5,10 +5,11 @@
   "main": "src/server/weewikipaint.js",
   "dependencies": {
     "jake": "^8.1.1",
-    "jshint": "^2.10.2",
+    "jshint": "^2.10.2"
+  },
+  "devDependencies": {
     "nodeunit": "^0.11.3"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "./jake.sh"
   },

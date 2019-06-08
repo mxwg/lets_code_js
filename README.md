@@ -10,11 +10,9 @@ Install the version 6 repo with:
         sudo apt install nodejs
 
 2. Node dependencies
-For the real dependencies, also see `.travis.yml`.
+Install dependencies listed in `package.json`:
 
-        npm install jake
-        npm install jslint
-        npm install nodeunit
+        npm install
 
 ## Deployment
 
