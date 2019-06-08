@@ -1,0 +1,28 @@
+{
+  "name": "weepaint",
+  "version": "0.0.1",
+  "description": "WeePaint based on github.com/jamesshore/lets_code_javascript",
+  "main": "src/server/weewikipaint.js",
+  "dependencies": {
+    "jake": "^8.1.1",
+    "jshint": "^2.10.2",
+    "nodeunit": "^0.11.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "./jake.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mxwg/lets_code_js.git"
+  },
+  "author": "Maximilian Wenger",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/mxwg/lets_code_js/issues"
+  },
+  "homepage": "https://github.com/mxwg/lets_code_js#readme",
+  "engines": {
+    "node": "6.17.1"
+  }
+}
