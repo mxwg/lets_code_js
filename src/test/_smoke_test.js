@@ -10,6 +10,10 @@ const http = require("http");
 
 let child;
 
+exports.setUp = function(done) {
+    runServer(done);
+};
+
 exports.tearDown = function(done) {
     child.on("exit", function() {
        done();
@@ -17,15 +21,15 @@ exports.tearDown = function(done) {
     child.kill();
   };
 
-exports.test_for_smoke = function (test) {
-    runProcess(function () {
-        getFromServer("/", function () {
-            test.done();
-        });
+exports.test_canGetHomepage = function (test) {
+    getFromServer("/", function (response, receivedData) {
+        const foundHomepage = receivedData.indexOf("WeeWikiPaint home page") !== -1;
+        test.ok(foundHomepage, "homepage should have contained WeeWikiPaint marker");
+        test.done();
     });
 };
 
-function runProcess(callback) {
+function runServer(callback) {
     child = child_process.spawn("node",["src/server/weewikipaint", "8088"]);
     child.stdout.setEncoding("utf8");
     child.stdout.on("data", function (chunk) {
