@@ -2,6 +2,7 @@
 
 const PORT = 8088;
 const TEST_FILE = "generated/test/test.html";
+const EXPECTED_DATA = "data from file";
 
 const fs = require("fs");
 const http = require("http");
@@ -11,53 +12,58 @@ const assert = require("assert");
 exports.tearDown = function (done) {
     if (fs.existsSync(TEST_FILE)) {
         fs.unlinkSync(TEST_FILE);
-        assert.ok(!fs.existsSync(TEST_FILE), "could not delete " + TEST_FILE);
+        assert.ok(!fs.existsSync(TEST_FILE), "could not clean up " + TEST_FILE);
     }
-
     done();
 };
 
-exports.test_serverRequiresPortNumber = function (test) {
+exports.test_requiresFileToServe = function (test) {
     test.throws(function () {
         server.start();
+    }, "should throw exception if file is missing");
+    test.done();
+};
+
+exports.test_requiresPortNumber = function (test) {
+    test.throws(function () {
+        server.start(TEST_FILE);
     }, "should throw exception if port is missing");
     test.done();
 };
 
-
-exports.test_serverRunsCallbackWhenStopCompletes = function (test) {
+exports.test_runsCallbackWhenStopCompletes = function (test) {
     server.start(TEST_FILE, PORT);
     server.stop(function () {
         test.done();
     });
 };
 
-exports.test_stopErrorsWhenServerNotRunning = function (test) {
+exports.test_stopErrorsWhenRunning = function (test) {
     server.stop(function (err) {
         test.notStrictEqual(err, undefined, "should throw exception when called twice");
         test.done();
     });
 };
 
-exports.test_serverServesHomepageFromFile = function (test) {
-    fs.writeFileSync(TEST_FILE, "data from file");
+exports.test_servesHomepageFromFile = function (test) {
+    fs.writeFileSync(TEST_FILE, EXPECTED_DATA);
 
     getFromServer("/", function (response, responseData) {
         test.equals(200, response.statusCode, "status code");
-        test.equals("data from file", responseData, "response text");
+        test.equals(EXPECTED_DATA, responseData, "response text");
         test.done();
     });
 };
 
-exports.test_serverReturns404ForEverythingExceptHomepage = function (test) {
+exports.test_returns404ForEverythingExceptHomepage = function (test) {
     getFromServer("/nonexistent", function (response) {
         test.equals(404, response.statusCode, "status code");
         test.done();
     });
 };
 
-exports.test_serverAlsoReturnsHomepageWhenAskedForIndex = function (test) {
-    fs.writeFileSync(TEST_FILE, "data from file");
+exports.test_returnsHomepageWhenAskedForIndex = function (test) {
+    fs.writeFileSync(TEST_FILE, EXPECTED_DATA);
 
     getFromServer("/index.html", function (response) {
         test.equals(200, response.statusCode, "status code");
