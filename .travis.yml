@@ -5,7 +5,7 @@ node_js:
 
 before_install:
   - sudo apt-get install -y chromium-browser
-  # firefox and phantomjs are installed by default
+  # firefox is installed by default
 
 jobs:
   include:

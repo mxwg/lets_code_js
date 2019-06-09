@@ -3,7 +3,7 @@ let karmaServerRunningInBackground = false;
 const getKarmaProcess = "ps a -o pid,cmd | grep 'karma start' |grep -v grep";
 const karmaTimeout_ms = 10000;
 
-const SUPPORTED_BROWSERS = ["Firefox", "PhantomJS", "HeadlessChrome"];
+const SUPPORTED_BROWSERS = ["Firefox", "HeadlessChrome"];
 
 (function() {
     "use strict";
