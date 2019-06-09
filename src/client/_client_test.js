@@ -2,13 +2,19 @@
 (function() {
     "use strict";
 
-    describe("Nothing", function () {
+    describe("Drawing area", function () {
 
-        it("should run", function () {
-            wwp.createElement();
+        it("should be initialized in correct div", function () {
+            const drawingAreaDivId = "wwp-drawing-area";
+            let div = document.createElement("div");
+            div.setAttribute("id", drawingAreaDivId);
+            document.body.appendChild(div);
 
-            var extractedDiv = document.getElementById("tdjs");
-            expect(extractedDiv.getAttribute("foo")).to.equal("bar");
+
+            wwp.initializeDrawingArea(drawingAreaDivId);
+
+            const extractedDiv = document.getElementById(drawingAreaDivId);
+            // expect(extractedDiv.getAttribute("foo")).to.equal("bar");
 
         });
     });

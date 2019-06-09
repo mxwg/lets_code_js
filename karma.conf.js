@@ -18,6 +18,7 @@ module.exports = function(config) {
     files: [
       'node_modules/expect.js/index.js',
       'vendor_client/jquery-3.4.1.js',
+      'vendor_client/raphael-2.2.8.js',
       'src/client/*.js'
     ],
 
