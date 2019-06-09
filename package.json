@@ -5,6 +5,7 @@
   "main": "src/server/weewikipaint.js",
   "dependencies": {
     "jake": "^8.1.1",
+    "jquery": "^3.4.1",
     "jshint": "^2.10.2",
     "procfile": "^0.1.1"
   },

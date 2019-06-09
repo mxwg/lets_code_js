@@ -17,7 +17,8 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'node_modules/expect.js/index.js',
-      'src/client/_*_test.js'
+      'vendor_client/jquery-3.4.1.js',
+      'src/client/*.js'
     ],
 
 

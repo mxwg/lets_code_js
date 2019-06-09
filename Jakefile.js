@@ -99,6 +99,7 @@ const SUPPORTED_BROWSERS = ["Firefox", "PhantomJS", "HeadlessChrome"];
         lintFiles.include("**/*.js");
         lintFiles.exclude("src/client/**");
         lintFiles.exclude("node_modules");
+        lintFiles.exclude("vendor_client/**");
         lintFiles.exclude("karma.conf.js");
         return lintFiles.toArray();
     }
