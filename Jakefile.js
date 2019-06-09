@@ -3,6 +3,8 @@ let karmaServerRunningInBackground = false;
 const getKarmaProcess = "ps a -o pid,cmd | grep 'karma start' |grep -v grep";
 const karmaTimeout_ms = 10000;
 
+const SUPPORTED_BROWSERS = ["Firefox", "PhantomJS", "HeadlessChrome"];
+
 (function() {
     "use strict";
     checkKarmaServer();
@@ -28,13 +30,13 @@ const karmaTimeout_ms = 10000;
     desc("Lint server");
     task("lintNode", [], function () {
         const passed = lint.validateFileList(nodeFiles(), nodeLintOptions(), {});
-        if (!passed) fail("Node linting failed!");
+        if (!passed) fail(bold_red("Node linting failed!"));
     });
 
     desc("Lint Client");
     task("lintClient", [], function () {
         const passed = lint.validateFileList(clientFiles(), browserLintOptions(), {});
-        if (!passed) fail("Client linting failed!");
+        if (!passed) fail(bold_red("Client linting failed!"));
     });
 
     desc("Test everything");
@@ -44,7 +46,7 @@ const karmaTimeout_ms = 10000;
     task("testNode", [TEMP_TESTFILE_DIR], function() {
         const reporter = require("nodeunit").reporters.default;
         reporter.run(nodeTestFiles(), null, function(failures) {
-            if (failures) fail(bold("Node tests failed."));
+            if (failures) fail(bold_red("Node tests failed."));
             complete();
         });
     }, {async: true});
@@ -53,7 +55,7 @@ const karmaTimeout_ms = 10000;
     task("releasetest", ["test"], function() {
         const reporter = require("nodeunit").reporters.default;
         reporter.run(releaseTestFiles(), null, function(failures) {
-            if (failures) fail("Website offline.");
+            if (failures) fail(bold_red("Website offline."));
             complete();
         });
     }, {async: true});
@@ -61,13 +63,17 @@ const karmaTimeout_ms = 10000;
     desc("Test client code");
     task("testClient", ["karmaServer"], function() {
         // Client test files are defined in karma.conf.js
-        check_output("./karma.sh", function (output) {
+        let log = "";
+        check_output("./karma.sh",
+            function (output) {
+            log += output;
         }, function (success) {
             stopKarmaServer();
+            assertAllBrowsersWereTested(log);
             console.log(bold("Client tests successful."));
         }, function (failure) {
             stopKarmaServer();
-            fail(bold("Client tests failed."));
+            fail(bold_red("Client tests failed."));
         });
     }, {async: true});
 
@@ -78,6 +84,14 @@ const karmaTimeout_ms = 10000;
 
     function bold(text) {
         return '\x1b[1m' + text + '\x1b[22m';
+    }
+
+    function red(text) {
+        return '\x1b[31m' + text + '\x1b[0m';
+    }
+
+    function bold_red(text) {
+        return bold(red(text));
     }
 
     function nodeFiles() {
@@ -142,6 +156,13 @@ const karmaTimeout_ms = 10000;
         return options;
     }
 
+    function assertAllBrowsersWereTested(log) {
+        SUPPORTED_BROWSERS.forEach(function (browser) {
+            const found = (log.indexOf(browser) !== -1);
+            if (!found) fail(bold_red("Browser not tested: " + browser));
+        });
+    }
+
     function checkKarmaServer() {
         run_silently(getKarmaProcess,
             function () {
@@ -156,7 +177,7 @@ const karmaTimeout_ms = 10000;
         if(!karmaServerRunningInBackground) {
             const karmaTimeout = setTimeout(function () {
                 stopKarmaServer();
-                fail(bold("Could not start Karma server in time (" + karmaTimeout_ms / 1000 + "s)"));
+                fail(bold_red("Could not start Karma server in time (" + karmaTimeout_ms / 1000 + "s)"));
             }, karmaTimeout_ms);
 
             check_output("./karma_server.sh", function (data) {
@@ -167,7 +188,7 @@ const karmaTimeout_ms = 10000;
             }, function () {
                 console.log("Karma server stopped.");
             }, function () {
-                fail("Karma server crashed.");
+                fail(bold_red("Karma server crashed."));
             });
         } else {
             console.log(bold("Karma server running in the background."));
@@ -181,7 +202,7 @@ const karmaTimeout_ms = 10000;
             check_output(killKarmaServer, function (output) {
                 console.log(output);
             }, complete, function (stdout) {
-                fail("Could not stop Karma server: " + stdout);
+                fail(bold_red("Could not stop Karma server: " + stdout));
             }, false);
         } else {
             console.log("Leaving Karma server up.");
