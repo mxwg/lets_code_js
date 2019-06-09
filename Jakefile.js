@@ -1,16 +1,15 @@
-
 /*global directory, desc, task, jake, fail, complete, rmRf */
 let karmaServerRunningInBackground = false;
+const getKarmaProcess = "ps a -o pid,cmd | grep 'karma start' |grep -v grep";
 
 (function() {
     "use strict";
-    checkForKarmaServerInBackground();
-
-    const GENERATED_DIR = "generated";
-
-    const TEMP_TESTFILE_DIR = GENERATED_DIR + "/test";
+    checkKarmaServer();
 
     const lint = require("./build/lint/lint_runner.js");
+
+    const GENERATED_DIR = "generated";
+    const TEMP_TESTFILE_DIR = GENERATED_DIR + "/test";
 
     directory(TEMP_TESTFILE_DIR);
 
@@ -142,6 +141,16 @@ let karmaServerRunningInBackground = false;
         return options;
     }
 
+    function checkKarmaServer() {
+        run_silently(getKarmaProcess,
+            function () {
+                console.log("Server already running.");
+                karmaServerRunningInBackground = true;
+            }, function () {
+                karmaServerRunningInBackground = false;
+            });
+    }
+
     function startKarmaServer() {
         if(!karmaServerRunningInBackground) {
             check_output("./karma_server.sh", function (data) {
@@ -159,23 +168,9 @@ let karmaServerRunningInBackground = false;
         }
     }
 
-    function checkForKarmaServerInBackground() {
-        check_output("ps a -o pid,cmd |grep 'karma start' |grep -v grep",
-            function () {
-                
-            }, function () {
-                console.log("Server already running.");
-                karmaServerRunningInBackground = true;
-                return true;
-            }, function () {
-                karmaServerRunningInBackground = false;
-                return false;
-            }, false);
-    }
-
     function stopKarmaServer() {
         if(!karmaServerRunningInBackground) {
-            const killKarmaServer = "kill -INT $(ps a -o pid,cmd |grep 'karma start' |grep -v grep | awk '{ print $1 }')";
+            const killKarmaServer = "kill -INT $(" + getKarmaProcess + " | awk '{ print $1 }')";
             check_output(killKarmaServer, function (output) {
                 console.log(output);
             }, complete, function (stdout) {
@@ -187,22 +182,22 @@ let karmaServerRunningInBackground = false;
         complete();
     }
 
-    function check_output(command, output, success, failure, print_bold = true) {
+    function check_output(command, output, success, failure, print_bold = true, print_output = true) {
         let stdout = "";
         const child = jake.createExec(command);
         child.on("stdout", function (data) {
             stdout += data.toString();
-            process.stderr.write(data);
+            if (print_output) process.stderr.write(data);
             output(data.toString());
         });
         child.on("stderr", function (data) {
-            process.stderr.write(data);
+            if (print_output) process.stderr.write(data);
         });
         child.on("cmdEnd", function () {
             success();
         });
         child.on("error", function (msg, code) {
-            console.log("Command failed with" + msg, code);
+            if (print_output) console.log("Command failed with" + msg, code);
             failure(stdout);
         });
 
@@ -210,8 +205,12 @@ let karmaServerRunningInBackground = false;
         if(print_bold) {
             commandString = bold(commandString);
         }
-        console.log(commandString);
+        if (print_output) console.log(commandString);
 
         child.run();
+    }
+
+    function run_silently(command, success, failure) {
+        check_output(command, function () {}, success, failure, false, false);
     }
 }());
