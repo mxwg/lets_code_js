@@ -1,9 +1,13 @@
 
 /*global directory, desc, task, jake, fail, complete, rmRf */
+let karmaServerRunningInBackground = false;
+
 (function() {
     "use strict";
+    checkForKarmaServerInBackground();
 
     const GENERATED_DIR = "generated";
+
     const TEMP_TESTFILE_DIR = GENERATED_DIR + "/test";
 
     const lint = require("./build/lint/lint_runner.js");
@@ -40,7 +44,7 @@
     task("testNode", [TEMP_TESTFILE_DIR], function() {
         const reporter = require("nodeunit").reporters.default;
         reporter.run(nodeTestFiles(), null, function(failures) {
-            if (failures) fail("Node tests failed.");
+            if (failures) fail(bold("Node tests failed."));
             complete();
         });
     }, {async: true});
@@ -59,11 +63,11 @@
         // Client test files are defined in karma.conf.js
         check_output("./karma.sh", function (output) {
         }, function (success) {
+            stopKarmaServer();
             console.log(bold("Client tests successful."));
-            stopKarmaServer();
         }, function (failure) {
-            fail("Client tests failed.");
             stopKarmaServer();
+            fail(bold("Client tests failed."));
         });
     }, {async: true});
 
@@ -139,24 +143,48 @@
     }
 
     function startKarmaServer() {
-        check_output("./karma_server.sh", function (data) {
-            if (data.indexOf("Firefox 67.0.0") !== -1) {
-                complete();
-            }
-        }, function () {
-            console.log("Karma server stopped.");
-        }, function () {
-            fail("Karma server crashed.");
-        });
+        if(!karmaServerRunningInBackground) {
+            check_output("./karma_server.sh", function (data) {
+                if (data.indexOf("Firefox 67.0.0") !== -1) {
+                    complete();
+                }
+            }, function () {
+                console.log("Karma server stopped.");
+            }, function () {
+                fail("Karma server crashed.");
+            });
+        } else {
+            console.log(bold("Karma server running in the background."));
+            complete();
+        }
+    }
+
+    function checkForKarmaServerInBackground() {
+        check_output("ps a -o pid,cmd |grep 'karma start' |grep -v grep",
+            function () {
+                
+            }, function () {
+                console.log("Server already running.");
+                karmaServerRunningInBackground = true;
+                return true;
+            }, function () {
+                karmaServerRunningInBackground = false;
+                return false;
+            }, false);
     }
 
     function stopKarmaServer() {
-        const killKarmaServer = "kill -INT $(ps a -o pid,cmd |grep 'karma start' |grep -v grep | awk '{ print $1 }')";
-        check_output(killKarmaServer, function (output) {
-            console.log(output);
-        }, complete, function (stdout) {
-            fail("Could not stop Karma server: " + stdout);
-        }, false);
+        if(!karmaServerRunningInBackground) {
+            const killKarmaServer = "kill -INT $(ps a -o pid,cmd |grep 'karma start' |grep -v grep | awk '{ print $1 }')";
+            check_output(killKarmaServer, function (output) {
+                console.log(output);
+            }, complete, function (stdout) {
+                fail("Could not stop Karma server: " + stdout);
+            }, false);
+        } else {
+            console.log("Leaving Karma server up.");
+        }
+        complete();
     }
 
     function check_output(command, output, success, failure, print_bold = true) {
@@ -177,14 +205,13 @@
             console.log("Command failed with" + msg, code);
             failure(stdout);
         });
+
         let commandString = "> " + command;
         if(print_bold) {
             commandString = bold(commandString);
         }
         console.log(commandString);
 
-
         child.run();
     }
-
 }());
