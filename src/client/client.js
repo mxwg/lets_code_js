@@ -7,8 +7,9 @@ wwp = {};
 
     const raphael = Raphael;
 
-    wwp.initializeDrawingArea = function (drawingAreaId) {
-        const paper = raphael(drawingAreaId);
+    wwp.initializeDrawingArea = function (drawingArea) {
+        const paper = raphael(drawingArea);
 
+        return paper;
     };
 }());
