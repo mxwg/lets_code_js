@@ -1,6 +1,7 @@
 /*global directory, desc, task, jake, fail, complete, rmRf */
 let karmaServerRunningInBackground = false;
 const getKarmaProcess = "ps a -o pid,cmd | grep 'karma start' |grep -v grep";
+const karmaTimeout_ms = 10000;
 
 (function() {
     "use strict";
@@ -153,8 +154,14 @@ const getKarmaProcess = "ps a -o pid,cmd | grep 'karma start' |grep -v grep";
 
     function startKarmaServer() {
         if(!karmaServerRunningInBackground) {
+            const karmaTimeout = setTimeout(function () {
+                stopKarmaServer();
+                fail(bold("Could not start Karma server in time (" + karmaTimeout_ms / 1000 + "s)"));
+            }, karmaTimeout_ms);
+
             check_output("./karma_server.sh", function (data) {
-                if (data.indexOf("Firefox 67.0.0") !== -1) {
+                if (data.indexOf("[Firefox ") !== -1) {
+                    clearTimeout(karmaTimeout);
                     complete();
                 }
             }, function () {
