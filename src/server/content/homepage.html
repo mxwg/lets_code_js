@@ -29,6 +29,10 @@
             }
 
         </style>
+
+        <script src="../../../vendor_client/jquery-3.4.1.js" type="text/javascript"></script>
+        <script src="../../../vendor_client/raphael-2.2.8.js" type="text/javascript"></script>
+        <script src="../../client/client.js" type="text/javascript"></script>
     </head>
 
     <body>
@@ -49,5 +53,20 @@
             </p>
         </div>
     </section>
+    <section>
+        <div style="text-align: left;">
+            <h1>Draw here:</h1>
+        </div>
+
+        <div id="wwp-drawing-area" style='height: 300px; width: 500px; border: solid red 2px;'>
+
+        </div>
+    </section>
+
+    <script type="text/javascript">
+        $(function () {
+            wwp.initializeDrawingArea($("#wwp-drawing-area")[0]);
+        });
+    </script>
     </body>
 </html>
