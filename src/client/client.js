@@ -9,8 +9,45 @@ wwp = {};
     let paper;
 
     wwp.initializeDrawingArea = function (drawingArea) {
+        let prevX = null;
+        let prevY = null;
+
         paper = raphael(drawingArea);
 
+        const jqArea = $(drawingArea);
+
+        // TODO: not working when going outside while dragging
+        let isDragging = false;
+
+        $(document).mousedown(function (event) {
+            isDragging = true;
+            prevX = null;
+            prevY = null;
+        });
+
+        $(document).mouseup(function(event) {
+            isDragging = false;
+        });
+
+        // jqArea.mouseleave(function(event) {
+        //     isDragging = false;
+        // });
+
+        jqArea.mousemove(function (event) {
+            // apparently event.offsetX was not working in the webcast...
+            // TODO: handle padding, border, margin
+            const divPageX = jqArea.offset().left;
+            const divPageY = jqArea.offset().top;
+            const clickX = event.pageX -divPageX;
+            const clickY = event.pageY - divPageY;
+
+
+            if (prevX !== null && isDragging) {
+                wwp.drawLine(prevX, prevY, clickX, clickY);
+            }
+            prevX = clickX;
+            prevY = clickY;
+        });
         return paper;
     };
 
